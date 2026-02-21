@@ -327,6 +327,12 @@
     </main>
 
     <script>
+      // Função auxiliar para remover acentos e facilitar a busca
+      const normalizar = (txt) =>
+        txt
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
       const inputs = ['obs', 'sentimento', 'necessidade', 'pedido'];
       const falsosSentimentos = [
         'ignorado',
@@ -357,6 +363,45 @@
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, ''),
       );
+
+      // ... dentro do seu <script> existente
+
+      const verbosAcusatorios = [
+        'invalida',
+        'invalidar',
+        'ignora',
+        'ignorar',
+        'provoca',
+        'provocar',
+        'humilha',
+        'humilhar',
+        'desperdiça',
+        'desperdiçar',
+        'ataca',
+        'atacar',
+      ].map((txt) => normalizar(txt));
+
+      const termosVagosPedido = [
+        'acolher',
+        'respeitar',
+        'entender',
+        'melhorar',
+        'mudar',
+        'tentar',
+        'ajudar',
+      ].map((txt) => normalizar(txt));
+
+      const adverbiosVagos = [
+        'muito',
+        'mal',
+        'pouco',
+        'demais',
+        'bastante',
+        'excessivamente',
+        'rapidamente',
+        'lentamente',
+      ].map((txt) => normalizar(txt));
+
       const julgamentosComuns = [
         'grosso',
         'grossa',
@@ -410,13 +455,6 @@
 
       let modoTreino = false;
       let avaliacaoRealTime = false;
-
-      // Função auxiliar para remover acentos e facilitar a busca
-      const normalizar = (txt) =>
-        txt
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '');
 
       window.onload = () => {
         inputs.forEach((id) => {
@@ -480,6 +518,19 @@
             msgs.push(
               '⚠️ Generalizações podem soar como acusação. Tente citar um momento específico.',
             );
+
+          // Novo filtro para verbos acusatórios
+          if (verbosAcusatorios.some((v) => valNorm.includes(v)))
+            msgs.push(
+              '🔍 Você usou um verbo que interpreta a intenção do outro (ex: invalida). Descreva a ação bruta.',
+            );
+
+          // NOVO: Filtro para advérbios vagos/julgadores
+          if (adverbiosVagos.some((a) => valNorm.split(/\s+/).includes(a)))
+            msgs.push(
+              '🔍 Advérbios como "mal" ou "muito" são subjetivos. Tente ser mais específico (ex: "com a voz alta").',
+            );
+
           if (val.length > 0 && val.length < 15)
             msgs.push(
               '💡 Poucos caracteres. Tente descrever a cena como se fosse uma câmera filmando.',
@@ -491,7 +542,7 @@
         } else if (id === 'sentimento') {
           if (falsosSentimentos.some((f) => valNorm.includes(f)))
             msgs.push(
-              '🔍 Você usou uma palavra que descreve a ação do outro. Tente: triste, assustado...',
+              '🔍 "Sentimento interpretativo": descreve o que o outro fez. Tente: triste, pequeno, inseguro...',
             );
           if (/\bque\b|\bcomo se\b/i.test(valNorm))
             msgs.push(
@@ -505,6 +556,13 @@
               "💡 Necessidades são universais. Tente tirar o 'outro' deste campo e foque no valor.",
             );
         } else if (id === 'pedido') {
+          // Novo filtro para termos vagos
+          if (termosVagosPedido.some((t) => valNorm.includes(t)))
+            msgs.push(
+              '⚠️ Pedido abstrato. O que o outro faria na prática para "' +
+                valNorm.match(new RegExp(termosVagosPedido.join('|'), 'gi')) +
+                '"?',
+            );
           if (/\bnao\b|\bvoce nao\b/i.test(valNorm))
             msgs.push(
               '⚖️ Pedidos negativos focam no limite. Limites são importantes, mas pedidos positivos (o que fazer) costumam ser mais eficazes. Se possível, complemente com uma ação positiva (o que fazer).',
@@ -564,6 +622,14 @@
             obsAlerts.push('tem generalizações');
           if (julgamentosComuns.some((j) => norm('obs').includes(j)))
             obsAlerts.push('tem julgamentos');
+
+          // --- COMPLEMENTO NOVO ---
+          if (verbosAcusatorios.some((v) => norm('obs').includes(v)))
+            obsAlerts.push('usa verbos que interpretam intenções');
+          if (adverbiosVagos.some((a) => norm('obs').split(/\s+/).includes(a)))
+            obsAlerts.push('tem advérbios subjetivos (ex: muito/mal)');
+          // ------------------------
+
           sectionsFeedback.push(
             obsAlerts.length
               ? `<li>❌ A observação ${obsAlerts.join(', ')}.</li>`
@@ -597,7 +663,14 @@
           let pedAlerts = [];
           if (/\bnao\b/i.test(norm('pedido')))
             pedAlerts.push('está no negativo');
+
+          // --- COMPLEMENTO NOVO ---
+          if (termosVagosPedido.some((t) => norm('pedido').includes(t)))
+            pedAlerts.push('tem termos abstratos (ex: acolher/tentar)');
+          // ------------------------
+
           if (val('pedido').length < 10) pedAlerts.push('está muito vago');
+
           sectionsFeedback.push(
             pedAlerts.length
               ? `<li>❌ O pedido ${pedAlerts.join(', ')}.</li>`
@@ -613,7 +686,6 @@
           behavior: 'smooth',
         });
       }
-
       function copiar() {
         navigator.clipboard.writeText(
           document.getElementById('frase-final').innerText,
