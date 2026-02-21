@@ -347,7 +347,12 @@
         'diminuída',
         'julgado',
         'julgada',
-      ];
+      ].map((txt) =>
+        txt
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, ''),
+      );
       const julgamentosComuns = [
         'grosso',
         'grossa',
@@ -358,7 +363,14 @@
         'lenta',
         'errado',
         'errada',
-      ];
+        'ingrato',
+        'ingrata',
+      ].map((txt) =>
+        txt
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, ''),
+      );
 
       const suggestions = {
         feelings: [
@@ -463,7 +475,7 @@
             );
           if (val.length > 0 && val.length < 15)
             msgs.push(
-              '💡 Tente descrever a cena como se fosse uma câmera filmando.',
+              '💡 Poucos caracteres. Tente descrever a cena como se fosse uma câmera filmando.',
             );
           if (julgamentosComuns.some((j) => valNorm.includes(j)))
             msgs.push(
