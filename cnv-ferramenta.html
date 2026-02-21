@@ -345,6 +345,10 @@
         'rejeitada',
         'diminuído',
         'diminuída',
+        'inferiorizado',
+        'inferiorizada',
+        'desprezado',
+        'desprezada',
         'julgado',
         'julgada',
       ].map((txt) =>
@@ -381,7 +385,10 @@
           'Exausto',
           'Inquieto',
           'Confuso',
-          'Aperto no peito',
+          'Desanimado',
+          'Com um aperto no peito',
+          'Pequeno',
+          'Fragilizado',
           'Vulnerável',
           'Inseguro',
           'Sobrecarregado',
@@ -559,8 +566,8 @@
             obsAlerts.push('tem julgamentos');
           sectionsFeedback.push(
             obsAlerts.length
-              ? `<li>A observação ${obsAlerts.join(', ')}.</li>`
-              : "<li class='text-emerald-600'>Observação factual.</li>",
+              ? `<li>❌ A observação ${obsAlerts.join(', ')}.</li>`
+              : "<li class='text-emerald-600'>✅ Observação factual.</li>",
           );
 
           // Validação Sentimento
@@ -571,18 +578,18 @@
             sentAlerts.push('parece opinião');
           sectionsFeedback.push(
             sentAlerts.length
-              ? `<li>O campo Sentimento ${sentAlerts.join(', ')}.</li>`
-              : "<li class='text-emerald-600'>Sentimento autêntico.</li>",
+              ? `<li>❌ O campo Sentimento ${sentAlerts.join(', ')}.</li>`
+              : "<li class='text-emerald-600'>✅ Sentimento autêntico.</li>",
           );
 
           // Validação Necessidade
           if (/\bvoce\b/i.test(norm('necessidade'))) {
             sectionsFeedback.push(
-              '<li>A necessidade cita o outro. Tente focar em um valor universal.</li>',
+              '<li>❌ A necessidade cita o outro. Tente focar em um valor universal.</li>',
             );
           } else {
             sectionsFeedback.push(
-              "<li class='text-emerald-600'>Necessidade bem centrada.</li>",
+              "<li class='text-emerald-600'>✅ Necessidade bem centrada.</li>",
             );
           }
 
@@ -593,8 +600,8 @@
           if (val('pedido').length < 10) pedAlerts.push('está muito vago');
           sectionsFeedback.push(
             pedAlerts.length
-              ? `<li>O pedido ${pedAlerts.join(', ')}.</li>`
-              : "<li class='text-emerald-600'>Pedido positivo e claro.</li>",
+              ? `<li>❌ O pedido ${pedAlerts.join(', ')}.</li>`
+              : "<li class='text-emerald-600'>✅ Pedido positivo e claro.</li>",
           );
 
           feedback.innerHTML = `📌 **Análise Crítica:**<br><ul class='list-disc pl-4 mt-2 space-y-1'>${sectionsFeedback.join('')}</ul>`;
