@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤝</text></svg>"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manutenção de Vínculo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+      :root {
+        --bg-color: #fcfcfc;
+        --paper-color: #ffffff;
+        --text-color: #2c3e50;
+        --border-color: #e0e0e0;
+        --blue-timer: #3498db;
+        --green-timer: #27ae60;
+        --yellow-timer: #f1c40f;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-family:
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header-status {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        max-width: 800px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .total-timer {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .page {
+        background: var(--paper-color);
+        width: 100%;
+        max-width: 800px;
+        padding: 40px;
+        margin-top: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        min-height: 100vh;
+      }
+
+      h1 {
+        text-align: center;
+        font-weight: 300;
+        margin-bottom: 40px;
+        color: #1a1a1a;
+      }
+
+      .block {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f9f9f9;
+      }
+
+      .block-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .block-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      .block-time-info {
+        font-size: 0.75rem;
+        color: #7f8c8d;
+      }
+
+      .timer-display {
+        font-variant-numeric: tabular-nums;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        background: #f8f9fa;
+        border: 1px solid transparent;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 140px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 15px;
+        font-size: 1rem;
+        resize: vertical;
+        margin: 10px 0;
+        line-height: 1.5;
+        background: #fff;
+        color: #333;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        padding: 8px 16px;
+        border: 1px solid var(--border-color);
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #f9f9f9;
+      }
+
+      .footer-actions {
+        max-width: 800px;
+        width: 100%;
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 50px;
+      }
+
+      .btn-pdf {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        font-weight: bold;
+        padding: 12px 24px;
+      }
+      .btn-clear {
+        color: #e74c3c;
+        border-color: #fadbd8;
+      }
+
+      .timer-blue {
+        color: var(--blue-timer);
+        border-color: var(--blue-timer);
+      }
+      .timer-green {
+        color: var(--green-timer);
+        border-color: var(--green-timer);
+      }
+      .timer-yellow {
+        color: var(--yellow-timer);
+        border-color: var(--yellow-timer);
+      }
+
+      .intro-section {
+        text-align: center;
+        margin: 20px auto 40px auto;
+        max-width: 600px;
+      }
+
+      .header-label {
+        display: inline-block;
+        background: #2c3e50;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 15px;
+      }
+
+      .description {
+        font-family: 'Georgia', serif; /* Um toque mais poético */
+        font-style: italic;
+        color: #5d6d7e;
+        line-height: 1.6;
+        font-size: 1.05rem;
+        margin-bottom: 25px;
+      }
+
+      .logic-box {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .logic-item {
+        background: #fdfdfd;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        flex: 1;
+      }
+
+      .logic-item strong {
+        display: block;
+        color: #2c3e50;
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+      }
+
+      .logic-item span {
+        font-size: 0.75rem;
+        color: #7f8c8d;
+        display: block;
+        line-height: 1.3;
+      }
+      .btn-back {
+        text-decoration: none;
+        color: var(--text-color);
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: #fff;
+        transition: all 0.2s;
+      }
+      .btn-back:hover {
+        background: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-status">
+      <a href="index.html" class="btn-back">← Menu</a>
+      <span>Manutenção de Vínculo</span>
+      <span class="total-timer"
+        >Tempo total: <span id="total-time-display">00:00</span></span
+      >
+    </div>
+
+    <div class="page">
+      <header class="intro-section">
+        <div class="header-label">Protocolo de Cuidado</div>
+        <p class="description">
+          Um espaço para pausas deliberadas. A manutenção não é sobre consertar
+          o que está quebrado, mas sobre nutrir a estrutura para que ela
+          continue aguentando o peso da rotina.
+        </p>
+
+        <div class="logic-box">
+          <div class="logic-item">
+            <strong>Tempo Mínimo</strong>
+            <span
+              >Garante que o assunto foi aprofundado com a calma que
+              merece.</span
+            >
+          </div>
+          <div class="logic-item">
+            <strong>Tempo Máximo</strong>
+            <span
+              >Preserva a energia mental, evitando que a conversa se torne
+              exaustiva.</span
+            >
+          </div>
+        </div>
+      </header>
+
+      <h1>Manutenção de Vínculo</h1>
+      <p
+        id="current-date"
+        style="
+          text-align: center;
+          color: #7f8c8d;
+          margin-top: -30px;
+          margin-bottom: 40px;
+        "
+      ></p>
+
+      <div id="blocks-container"></div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn-clear" onclick="clearAll()">Limpar tudo</button>
+      <button class="btn-pdf" onclick="generatePDF()">Salvar como PDF</button>
+    </div>
+
+    <script>
+      const { jsPDF } = window.jspdf;
+
+      const blocksData = [
+        {
+          title: 'Bloco 1 — Conexão 🤍',
+          pdfTitle: 'Bloco 1 - Conexao',
+          subtitle: 'O que eu gostei da gente essa semana',
+          min: 10,
+          max: 10,
+        },
+        {
+          title: 'Bloco 2 — Ajustes emocionais 🧠',
+          pdfTitle: 'Bloco 2 - Ajustes emocionais',
+          subtitle:
+            'Algo que me deixou sensível / sobrecarregado (sem acusação)',
+          min: 10,
+          max: 15,
+        },
+        {
+          title: 'Bloco 3 — Vida prática 🔧',
+          pdfTitle: 'Bloco 3 - Vida pratica',
+          subtitle: 'Algo que pode melhorar a rotina',
+          min: 5,
+          max: 10,
+        },
+        {
+          title: 'Bloco 4 — Necessidades afetivas 💭',
+          pdfTitle: 'Bloco 4 - Necessidades afetivas',
+          subtitle: 'Algo que eu preciso de você emocionalmente agora',
+          min: 5,
+          max: 10,
+        },
+      ];
+
+      let activeBlock = null;
+      let totalSeconds = 0;
+      let blockSeconds = [0, 0, 0, 0];
+      let mainInterval = null;
+
+      const container = document.getElementById('blocks-container');
+      blocksData.forEach((b, i) => {
+        container.innerHTML += `
+            <section class="block">
+                <div class="block-header">
+                    <div>
+                        <h2 class="block-title">${b.title}</h2>
+                        <span class="block-time-info">${b.min}-${b.max} min</span>
+                    </div>
+                    <div class="timer-display timer-blue" id="timer-${i}">00:00</div>
+                </div>
+                <p><em>${b.subtitle}</em></p>
+                <textarea id="text-${i}" oninput="saveText(${i}, this.value)"></textarea>
+                <div class="button-group">
+                    <button id="btn-start-${i}" onclick="startTimer(${i})">Iniciar</button>
+                    <button onclick="pauseTimer()">Pausar</button>
+                    <button onclick="resetTimer(${i})">Reset</button>
+                </div>
+            </section>
+        `;
+      });
+
+      function saveText(i, val) {
+        localStorage.setItem(`vinculo_v2_text_${i}`, val);
+      }
+
+      function loadData() {
+        blocksData.forEach((_, i) => {
+          const saved = localStorage.getItem(`vinculo_v2_text_${i}`);
+          if (saved) document.getElementById(`text-${i}`).value = saved;
+        });
+        document.getElementById('current-date').innerText =
+          new Date().toLocaleDateString('pt-BR');
+      }
+
+      function formatTime(s) {
+        const m = Math.floor(s / 60)
+          .toString()
+          .padStart(2, '0');
+        const r = (s % 60).toString().padStart(2, '0');
+        return `${m}:${r}`;
+      }
+
+      function startTimer(i) {
+        if (activeBlock === i) return;
+        pauseTimer();
+        activeBlock = i;
+        document
+          .querySelectorAll('button[id^="btn-start"]')
+          .forEach((b) => (b.style.fontWeight = 'normal'));
+        document.getElementById(`btn-start-${i}`).style.fontWeight = 'bold';
+
+        mainInterval = setInterval(() => {
+          totalSeconds++;
+          blockSeconds[i]++;
+          updateDisplays();
+        }, 1000);
+      }
+
+      function pauseTimer() {
+        activeBlock = null;
+        clearInterval(mainInterval);
+      }
+
+      function resetTimer(i) {
+        blockSeconds[i] = 0;
+        updateDisplays();
+      }
+
+      function updateDisplays() {
+        document.getElementById('total-time-display').innerText =
+          formatTime(totalSeconds);
+        blockSeconds.forEach((s, i) => {
+          const el = document.getElementById(`timer-${i}`);
+          el.innerText = formatTime(s);
+          const cfg = blocksData[i];
+          el.className = 'timer-display';
+          if (s < cfg.min * 60) el.classList.add('timer-blue');
+          else if (s >= cfg.min * 60 && s <= cfg.max * 60)
+            el.classList.add('timer-green');
+          else el.classList.add('timer-yellow');
+        });
+      }
+
+      function clearAll() {
+        if (confirm('Deseja apagar todos os textos e zerar os tempos?')) {
+          localStorage.clear();
+          location.reload();
+        }
+      }
+
+      function generatePDF() {
+        const doc = new jsPDF({
+          orientation: 'p',
+          unit: 'mm',
+          format: 'a4',
+        });
+
+        // Configuração de fonte para suportar acentos melhor
+        doc.setFont('helvetica', 'normal');
+
+        const dateStr = new Date().toLocaleDateString('pt-BR');
+        const margin = 20;
+        let cursorY = 25;
+
+        // Título Principal
+        doc.setFontSize(22);
+        doc.setTextColor(44, 62, 80);
+        doc.text('Manutenção de Vínculo', margin, cursorY);
+        cursorY += 12;
+
+        // Linha de Resumo
+        doc.setFontSize(10);
+        doc.setTextColor(127, 140, 141);
+        doc.text(
+          `Data: ${dateStr}   |   Investimento de tempo: ${formatTime(totalSeconds)}`,
+          margin,
+          cursorY,
+        );
+
+        // Linha divisória
+        cursorY += 5;
+        doc.setDrawColor(224, 224, 224);
+        doc.line(margin, cursorY, 190, cursorY);
+        cursorY += 15;
+
+        blocksData.forEach((b, i) => {
+          const answer =
+            document.getElementById(`text-${i}`).value.trim() ||
+            '(Não preenchido)';
+
+          // Título do Bloco (Sem emojis para não quebrar)
+          doc.setFontSize(13);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(0, 0, 0);
+          doc.text(b.pdfTitle, margin, cursorY);
+          cursorY += 7;
+
+          // Subtítulo/Pergunta
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'italic');
+          doc.setTextColor(100, 100, 100);
+          doc.text(b.subtitle, margin, cursorY);
+          cursorY += 8;
+
+          // Resposta
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(50, 50, 50);
+
+          const splitText = doc.splitTextToSize(answer, 170);
+          doc.text(splitText, margin, cursorY);
+
+          cursorY += splitText.length * 6 + 15;
+
+          // Gerenciamento de página
+          if (cursorY > 275) {
+            doc.addPage();
+            cursorY = 25;
+          }
+        });
+
+        doc.save(`Manutencao_Vinculo_${dateStr.replace(/\//g, '_')}.pdf`);
+      }
+
+      window.onload = loadData;
+    </script>
+  </body>
+</html>

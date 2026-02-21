@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador Inteligente de CNV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+        color: #334155;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+      }
+      .input-focus {
+        transition: all 0.3s ease;
+      }
+      .input-focus:focus {
+        border-color: #94a3b8;
+        box-shadow: 0 0 0 4px rgba(203, 213, 225, 0.2);
+        outline: none;
+      }
+      .suggestion-chip {
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .suggestion-chip:hover {
+        background-color: #e2e8f0;
+      }
+      .feedback-hint {
+        font-size: 0.75rem;
+        font-style: italic;
+        margin-top: 0.5rem;
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8 min-h-screen flex flex-col items-center">
+    <div class="max-w-2xl w-full mb-4">
+      <a
+        href="index.html"
+        class="text-xs font-semibold uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-2"
+      >
+        <span>←</span> Voltar para a Central
+      </a>
+    </div>
+    <header
+      class="max-w-2xl w-full mb-6 flex flex-col items-center gap-4 text-center"
+    >
+      <div>
+        <h1 class="text-2xl font-semibold text-slate-800">Gerador de CNV</h1>
+        <p class="text-slate-500 text-sm italic">
+          Construindo pontes através das palavras.
+        </p>
+      </div>
+
+      <div
+        class="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm"
+      >
+        <span class="text-xs font-medium text-slate-600"
+          >Avaliação em tempo real</span
+        >
+        <button
+          id="toggleRealTime"
+          onclick="toggleAvaliacao()"
+          class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors"
+        >
+          <span
+            id="toggleKnob"
+            class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1"
+          ></span>
+        </button>
+      </div>
+    </header>
+
+    <section class="max-w-2xl w-full mb-8 px-4">
+      <details
+        open
+        class="group glass-card rounded-3xl overflow-hidden border border-slate-200 transition-all duration-300"
+      >
+        <summary
+          class="list-none cursor-pointer p-4 bg-slate-50/50 flex items-center justify-between hover:bg-slate-50 transition-colors"
+        >
+          <span
+            class="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2"
+          >
+            <span
+              class="group-open:rotate-180 transition-transform duration-300"
+              >📖</span
+            >
+            Guia Rápido & Exemplos
+          </span>
+          <span
+            class="text-[10px] text-slate-400 font-medium group-open:hidden uppercase tracking-tighter"
+            >Clique para expandir</span
+          >
+          <span
+            class="text-[10px] text-slate-400 font-medium hidden group-open:block uppercase tracking-tighter"
+            >Clique para recolher</span
+          >
+        </summary>
+
+        <div class="p-6 space-y-8 animate-fadeIn">
+          <div class="space-y-3">
+            <h2
+              class="text-sm font-bold uppercase tracking-widest text-slate-400"
+            >
+              O que é CNV?
+            </h2>
+            <p class="text-slate-600 leading-relaxed text-sm">
+              A Comunicação Não Violenta é um treino de atenção criado por
+              Marshall Rosenberg. Ela nos ajuda a desarmar a reatividade e focar
+              no que está vivo em nós e no outro, transformando conflitos em
+              diálogos de conexão através de 4 pilares: Observação, Sentimento,
+              Necessidade e Pedido.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl border border-rose-100 bg-rose-50/30">
+              <h3 class="text-[10px] font-bold text-rose-500 uppercase mb-2">
+                Onde a ponte quebra:
+              </h3>
+              <p class="text-xs text-slate-600 italic">
+                "Você é muito irresponsável com os horários, nunca me respeita!"
+              </p>
+            </div>
+            <div
+              class="p-4 rounded-2xl border border-emerald-100 bg-emerald-50/30"
+            >
+              <h3 class="text-[10px] font-bold text-emerald-600 uppercase mb-2">
+                Onde a ponte se constrói:
+              </h3>
+              <p class="text-xs text-slate-600 italic">
+                "Quando você chegou 30 min depois do combinado, me senti
+                frustrado porque clareza e previsibilidade são importantes para
+                mim. Podemos combinar de você me avisar se for atrasar mais de
+                10 min na próxima vez?"
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100">
+            <h2
+              class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 text-center"
+            >
+              Como usar a ferramenta
+            </h2>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div class="text-base mb-1">✍️</div>
+                <h4 class="text-[10px] font-bold text-slate-700 uppercase">
+                  Preencha
+                </h4>
+                <p class="text-[9px] text-slate-500 leading-tight">
+                  Siga os 4 passos nos campos abaixo.
+                </p>
+              </div>
+              <div>
+                <div class="text-base mb-1">🔍</div>
+                <h4 class="text-[10px] font-bold text-slate-700 uppercase">
+                  Avalie
+                </h4>
+                <p class="text-[9px] text-slate-500 leading-tight">
+                  Ative a Avalição, em tempo real ou ao fim, para feedbacks.
+                </p>
+              </div>
+              <div>
+                <div class="text-base mb-1">🕊️</div>
+                <h4 class="text-[10px] font-bold text-slate-700 uppercase">
+                  Conecte
+                </h4>
+                <p class="text-[9px] text-slate-500 leading-tight">
+                  Copie ou exporte e guarde ou use para um diálogo honesto.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <main class="max-w-2xl w-full space-y-6">
+      <section class="glass-card p-6 rounded-3xl shadow-sm">
+        <label
+          class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2"
+          >1. Quando...</label
+        >
+        <textarea
+          id="obs"
+          class="w-full p-4 rounded-2xl border border-slate-200 input-focus bg-white/50 resize-none h-24"
+          placeholder="Descreva o fato concreto sem julgamentos."
+        ></textarea>
+        <div id="obs-hint" class="feedback-hint text-rose-500 hidden"></div>
+      </section>
+
+      <section class="glass-card p-6 rounded-3xl shadow-sm">
+        <label
+          class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2"
+          >2. Eu me sinto/senti...</label
+        >
+        <textarea
+          id="sentimento"
+          class="w-full p-4 rounded-2xl border border-slate-200 input-focus bg-white/50 resize-none h-20"
+          placeholder="Como você se sente? Evite descrever o que o outro fez."
+        ></textarea>
+        <div
+          id="sentimento-hint"
+          class="feedback-hint text-amber-600 hidden"
+        ></div>
+        <div class="mt-3 space-y-2">
+          <p
+            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+          >
+            Sugestões:
+          </p>
+          <div class="flex flex-wrap gap-2" id="feelings-suggestions"></div>
+        </div>
+      </section>
+
+      <section class="glass-card p-6 rounded-3xl shadow-sm">
+        <label
+          class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2"
+          >3. Porque preciso de...</label
+        >
+        <textarea
+          id="necessidade"
+          class="w-full p-4 rounded-2xl border border-slate-200 input-focus bg-white/50 resize-none h-20"
+          placeholder="Qual valor fundamental está em jogo?"
+        ></textarea>
+        <div
+          id="necessidade-hint"
+          class="feedback-hint text-amber-600 hidden"
+        ></div>
+        <div class="mt-3 space-y-2">
+          <p
+            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+          >
+            Sugestões:
+          </p>
+          <div class="flex flex-wrap gap-2" id="needs-suggestions"></div>
+        </div>
+      </section>
+
+      <section class="glass-card p-6 rounded-3xl shadow-sm">
+        <label
+          class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2"
+          >4. Podemos...</label
+        >
+        <textarea
+          id="pedido"
+          class="w-full p-4 rounded-2xl border border-slate-200 input-focus bg-white/50 resize-none h-20"
+          placeholder="Faça um pedido claro e positivo."
+        ></textarea>
+        <div id="pedido-hint" class="feedback-hint text-amber-600 hidden"></div>
+      </section>
+
+      <div class="flex flex-col gap-4">
+        <button
+          onclick="gerarFrase()"
+          class="w-full py-4 bg-slate-800 text-white rounded-2xl font-semibold shadow-lg active:scale-95 transition-transform"
+        >
+          1. Gerar frase em CNV
+        </button>
+        <button
+          id="btnTreino"
+          onclick="toggleModoTreino()"
+          class="w-full py-3 border-2 border-slate-200 text-slate-600 rounded-2xl font-medium hover:bg-slate-50 transition-colors"
+        >
+          2. Mostrar avaliação
+        </button>
+      </div>
+
+      <section
+        id="result-container"
+        class="hidden glass-card p-8 rounded-3xl border-2 border-emerald-100 bg-emerald-50/30 space-y-4"
+      >
+        <div
+          id="feedback-treino"
+          class="hidden mb-4 p-4 rounded-xl bg-white border border-emerald-100 text-sm text-slate-600"
+        ></div>
+        <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest">
+          Frase em CNV Gerada:
+        </p>
+        <p
+          id="frase-final"
+          class="text-lg leading-relaxed text-slate-700 font-medium"
+        ></p>
+        <div class="flex gap-2 pt-4">
+          <button
+            onclick="copiar()"
+            class="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50"
+          >
+            Copiar
+          </button>
+          <button
+            onclick="exportar()"
+            class="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50"
+          >
+            Exportar .txt
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const inputs = ['obs', 'sentimento', 'necessidade', 'pedido'];
+      const falsosSentimentos = [
+        'ignorado',
+        'ignorada',
+        'traído',
+        'traída',
+        'injustiçado',
+        'injustiçada',
+        'abandonado',
+        'abandonada',
+        'atacado',
+        'atacada',
+        'desrespeitado',
+        'desrespeitada',
+        'rejeitado',
+        'rejeitada',
+        'diminuído',
+        'diminuída',
+        'julgado',
+        'julgada',
+      ];
+      const julgamentosComuns = [
+        'grosso',
+        'grossa',
+        'idiota',
+        'egoísta',
+        'irresponsável',
+        'lento',
+        'lenta',
+        'errado',
+        'errada',
+      ];
+
+      const suggestions = {
+        feelings: [
+          'Triste',
+          'Frustrado',
+          'Ansioso',
+          'Aflito',
+          'Exausto',
+          'Inquieto',
+          'Confuso',
+          'Aperto no peito',
+          'Vulnerável',
+          'Inseguro',
+          'Sobrecarregado',
+          'Melancólico',
+        ],
+        needs: [
+          'Apoio',
+          'Respeito',
+          'Descanso',
+          'Conexão',
+          'Clareza',
+          'Autonomia',
+          'Segurança',
+          'Reconhecimento',
+          'Previsibilidade',
+          'Escuta',
+        ],
+      };
+
+      let modoTreino = false;
+      let avaliacaoRealTime = false;
+
+      // Função auxiliar para remover acentos e facilitar a busca
+      const normalizar = (txt) =>
+        txt
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+      window.onload = () => {
+        inputs.forEach((id) => {
+          const el = document.getElementById(id);
+          el.value = localStorage.getItem(id) || '';
+          el.addEventListener('input', () => {
+            localStorage.setItem(id, el.value);
+            if (avaliacaoRealTime) processarAvaliacao(id, el.value);
+          });
+        });
+        renderSuggestions();
+      };
+
+      function renderSuggestions() {
+        const feelContainer = document.getElementById('feelings-suggestions');
+        suggestions.feelings.forEach((f) => {
+          const span = document.createElement('span');
+          span.className =
+            'suggestion-chip px-3 py-1 bg-white border border-slate-200 rounded-full text-[11px] text-slate-500';
+          span.innerText = f;
+          span.onclick = () => addText('sentimento', f);
+          feelContainer.appendChild(span);
+        });
+        const needContainer = document.getElementById('needs-suggestions');
+        suggestions.needs.forEach((n) => {
+          const span = document.createElement('span');
+          span.className =
+            'suggestion-chip px-3 py-1 bg-white border border-slate-200 rounded-full text-[11px] text-slate-500';
+          span.innerText = n;
+          span.onclick = () => addText('necessidade', n);
+          needContainer.appendChild(span);
+        });
+      }
+
+      function toggleAvaliacao() {
+        avaliacaoRealTime = !avaliacaoRealTime;
+        const knob = document.getElementById('toggleKnob');
+        const bg = document.getElementById('toggleRealTime');
+        knob.classList.toggle('translate-x-6');
+        bg.classList.toggle('bg-emerald-500');
+        bg.classList.toggle('bg-slate-200');
+
+        if (!avaliacaoRealTime) {
+          inputs.forEach((id) =>
+            document.getElementById(`${id}-hint`).classList.add('hidden'),
+          );
+        } else {
+          inputs.forEach((id) =>
+            processarAvaliacao(id, document.getElementById(id).value),
+          );
+        }
+      }
+
+      function processarAvaliacao(id, val) {
+        const hintEl = document.getElementById(`${id}-hint`);
+        const valNorm = normalizar(val);
+        let msgs = [];
+
+        if (id === 'obs') {
+          if (/sempre|nunca|toda vez/i.test(valNorm))
+            msgs.push(
+              '⚠️ Generalizações podem soar como acusação. Tente citar um momento específico.',
+            );
+          if (val.length > 0 && val.length < 15)
+            msgs.push(
+              '💡 Tente descrever a cena como se fosse uma câmera filmando.',
+            );
+          if (julgamentosComuns.some((j) => valNorm.includes(j)))
+            msgs.push(
+              '🔍 Você usou um adjetivo que pode ser interpretado como julgamento.',
+            );
+        } else if (id === 'sentimento') {
+          if (falsosSentimentos.some((f) => valNorm.includes(f)))
+            msgs.push(
+              '🔍 Você usou uma palavra que descreve a ação do outro. Tente: triste, assustado...',
+            );
+          if (/\bque\b|\bcomo se\b/i.test(valNorm))
+            msgs.push(
+              "🔍 'Que' ou 'Como se' geralmente introduzem um pensamento.",
+            );
+          if (/mas /i.test(valNorm))
+            msgs.push("⚠️ O 'mas' desvia o foco da sua emoção.");
+        } else if (id === 'necessidade') {
+          if (/\bvoce\b|\bque voce\b/i.test(valNorm))
+            msgs.push(
+              "💡 Necessidades são universais. Tente tirar o 'outro' deste campo e foque no valor.",
+            );
+        } else if (id === 'pedido') {
+          if (/\bnao\b|\bvoce nao\b/i.test(valNorm))
+            msgs.push(
+              '⚖️ Pedidos negativos focam no limite. Limites são importantes, mas pedidos positivos (o que fazer) costumam ser mais eficazes. Se possível, complemente com uma ação positiva (o que fazer).',
+            );
+          if (val.length > 0 && val.length < 10)
+            msgs.push('💡 Pedidos claros são específicos.');
+        }
+
+        if (msgs.length > 0) {
+          hintEl.innerHTML = msgs.join('<br>');
+          hintEl.classList.remove('hidden');
+        } else {
+          hintEl.classList.add('hidden');
+        }
+      }
+
+      function addText(id, text) {
+        const el = document.getElementById(id);
+        el.value = el.value ? `${el.value}, ${text.toLowerCase()}` : text;
+        localStorage.setItem(id, el.value);
+        if (avaliacaoRealTime) processarAvaliacao(id, el.value);
+      }
+
+      function toggleModoTreino() {
+        modoTreino = !modoTreino;
+        const btn = document.getElementById('btnTreino');
+        btn.innerText = modoTreino ? 'Ocultar avaliação' : 'Mostrar avaliação';
+        btn.classList.toggle('bg-slate-100');
+        if (
+          !document
+            .getElementById('result-container')
+            .classList.contains('hidden')
+        )
+          gerarFrase();
+      }
+
+      function gerarFrase() {
+        const val = (id) => document.getElementById(id).value.trim();
+        const norm = (id) => normalizar(val(id));
+
+        const p = val('pedido');
+        const interrogacao = p.endsWith('?') ? '' : '?';
+        const frase = `Quando ${val('obs')}, eu me sinto/senti ${val('sentimento')}, porque preciso de ${val('necessidade')}. Podemos ${p}${interrogacao}`;
+
+        document.getElementById('frase-final').innerText = frase;
+        document.getElementById('result-container').classList.remove('hidden');
+
+        const feedback = document.getElementById('feedback-treino');
+        if (modoTreino) {
+          feedback.classList.remove('hidden');
+          let sectionsFeedback = [];
+
+          // Validação Observação
+          let obsAlerts = [];
+          if (val('obs').length < 15) obsAlerts.push('está muito curta');
+          if (/sempre|nunca/i.test(norm('obs')))
+            obsAlerts.push('tem generalizações');
+          if (julgamentosComuns.some((j) => norm('obs').includes(j)))
+            obsAlerts.push('tem julgamentos');
+          sectionsFeedback.push(
+            obsAlerts.length
+              ? `<li>A observação ${obsAlerts.join(', ')}.</li>`
+              : "<li class='text-emerald-600'>Observação factual.</li>",
+          );
+
+          // Validação Sentimento
+          let sentAlerts = [];
+          if (falsosSentimentos.some((f) => norm('sentimento').includes(f)))
+            sentAlerts.push(`tem "falsos sentimentos"`);
+          if (/\bque\b|\bcomo se\b/i.test(norm('sentimento')))
+            sentAlerts.push('parece opinião');
+          sectionsFeedback.push(
+            sentAlerts.length
+              ? `<li>O campo Sentimento ${sentAlerts.join(', ')}.</li>`
+              : "<li class='text-emerald-600'>Sentimento autêntico.</li>",
+          );
+
+          // Validação Necessidade
+          if (/\bvoce\b/i.test(norm('necessidade'))) {
+            sectionsFeedback.push(
+              '<li>A necessidade cita o outro. Tente focar em um valor universal.</li>',
+            );
+          } else {
+            sectionsFeedback.push(
+              "<li class='text-emerald-600'>Necessidade bem centrada.</li>",
+            );
+          }
+
+          // Validação Pedido
+          let pedAlerts = [];
+          if (/\bnao\b/i.test(norm('pedido')))
+            pedAlerts.push('está no negativo');
+          if (val('pedido').length < 10) pedAlerts.push('está muito vago');
+          sectionsFeedback.push(
+            pedAlerts.length
+              ? `<li>O pedido ${pedAlerts.join(', ')}.</li>`
+              : "<li class='text-emerald-600'>Pedido positivo e claro.</li>",
+          );
+
+          feedback.innerHTML = `📌 **Análise Crítica:**<br><ul class='list-disc pl-4 mt-2 space-y-1'>${sectionsFeedback.join('')}</ul>`;
+        } else {
+          feedback.classList.add('hidden');
+        }
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+
+      function copiar() {
+        navigator.clipboard.writeText(
+          document.getElementById('frase-final').innerText,
+        );
+        alert('Frase copiada!');
+      }
+
+      function exportar() {
+        const texto = document.getElementById('frase-final').innerText;
+        const data = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+        const blob = new Blob([texto], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CNV - ${data}.txt`;
+        a.click();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quebra-gelo Almoço/Janta</title>
+    <style>
+      .back-link {
+        align-self: flex-start;
+        margin-bottom: 20px;
+        text-decoration: none;
+        color: #888;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: color 0.2s;
+      }
+      .back-link:hover {
+        color: var(--accent-color);
+      }
+      .intro-section {
+        text-align: center;
+        margin-bottom: 40px;
+        border-bottom: 2px solid var(--bg-color);
+        padding-bottom: 20px;
+      }
+
+      .description {
+        font-style: italic;
+        color: #666;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto 25px auto;
+        font-size: 1rem;
+      }
+
+      .logic-box {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+
+      .logic-item {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px dashed #ccc;
+        flex: 1;
+        min-width: 200px;
+        max-width: 280px;
+      }
+
+      .logic-item strong {
+        display: block;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .logic-item span {
+        font-size: 0.85rem;
+        color: #777;
+      }
+      :root {
+        --bg-color: #f5f5f5;
+        --paper-color: #ffffff;
+        --text-color: #333;
+        --border-color: #eee;
+        --accent-color: #000;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+          Arial, sans-serif;
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .page {
+        background: var(--paper-color);
+        width: 100%;
+        max-width: 800px;
+        min-height: 100vh;
+        padding: 40px 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border-radius: 2px;
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+        font-weight: 500;
+        margin-bottom: 30px;
+        letter-spacing: -0.5px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 40px 0 20px 0;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 1.1rem;
+        color: #444;
+      }
+
+      /* Tabela de Perguntas Fixas */
+      .fixed-grid {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 40px;
+      }
+
+      .fixed-grid th {
+        font-weight: 500;
+        padding: 10px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .fixed-grid td {
+        border: 1px solid var(--border-color);
+        padding: 15px 5px;
+        text-align: center;
+        width: 25%;
+      }
+
+      /* Listas de Legenda (Fixas de Almoço/Jantar/Neutras) */
+      .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+        background: #fafafa;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .info-list li {
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        color: #555;
+      }
+
+      .info-list strong {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--text-color);
+        font-size: 1rem;
+      }
+
+      /* Lista de Perguntas Variáveis */
+      .question-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        cursor: pointer;
+        line-height: 1.4;
+      }
+
+      /* A Bolinha */
+      .dot {
+        width: 22px;
+        height: 22px;
+        border: 1.5px solid var(--accent-color);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .dot.active {
+        background-color: var(--accent-color);
+      }
+
+      .dot.active::after {
+        content: '●';
+        color: white;
+        font-size: 14px;
+      }
+
+      /* Botões */
+      .controls {
+        margin-top: 50px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+        font-size: 0.85rem;
+        border-radius: 4px;
+      }
+
+      .btn-clear {
+        color: #d93025;
+        border-color: #f8d7da;
+      }
+
+      @media (max-width: 600px) {
+        .page {
+          padding: 25px 15px;
+        }
+        .info-list {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="index.html" class="back-link">← Voltar à Central</a>
+    <div class="page">
+      <header class="intro-section">
+        <h1>🍽️ Quebra-gelo: Almoço & Janta</h1>
+        <p class="description">
+          Um guia de presença para transformar refeições em pontos de ancoragem.
+        </p>
+
+        <div class="logic-box">
+          <div class="logic-item">
+            <strong>Ciclo Fixo (28):</strong>
+            <span
+              >2 perguntas por refeição. Para checar o clima, a cor do dia e o
+              que está vibrando agora.</span
+            >
+          </div>
+          <div class="logic-item">
+            <strong>Ciclo Variável (42):</strong>
+            <span
+              >3 perguntas por refeição. Para explorar o imaginário, o caos e o
+              "nós". Use cada pergunta uma única vez.</span
+            >
+          </div>
+        </div>
+      </header>
+      <h2>Perguntas Fixas</h2>
+
+      <table class="fixed-grid">
+        <thead>
+          <tr>
+            <th colspan="2">Almoço</th>
+            <th colspan="2">Janta</th>
+          </tr>
+        </thead>
+        <tbody id="fixed-rows"></tbody>
+      </table>
+
+      <div class="info-list">
+        <strong>🌤️ FIXAS DE ALMOÇO</strong>
+        <li>1. Se sua manhã tivesse uma cor, qual seria?</li>
+        <li>2. Qual foi o momento mais inesperado até agora?</li>
+        <li>
+          3. Seu humor agora está mais para acelerado, estável ou disperso?
+        </li>
+        <li>4. Teve algo pequeno que melhorou sua manhã?</li>
+        <li>
+          5. Qual foi o pensamento mais curioso que passou pela sua cabeça hoje
+          cedo?
+        </li>
+      </div>
+
+      <div class="info-list">
+        <strong>🌙 FIXAS DE JANTAR</strong>
+        <li>12. O que hoje te drenou um pouquinho?</li>
+        <li>13. Teve algo hoje que te deu um mínimo de orgulho?</li>
+        <li>14. Se pudesse repetir um micromomento do dia, qual seria?</li>
+        <li>15. Seu corpo agora está pedindo mais descanso ou distração?</li>
+        <li>16. Se tivesse que resumir o dia em uma palavra, qual seria?</li>
+      </div>
+
+      <div class="info-list">
+        <strong>⚪ FIXAS NEUTRAS</strong>
+        <li>6. Qual foi a coisa mais aleatória do seu dia?</li>
+        <li>7. Teve algum momento que melhorou seu humor?</li>
+        <li>8. Se seu dia tivesse trilha sonora, qual música tocaria agora?</li>
+        <li>
+          9. Qual coisa pequena você notou hoje que quase ninguém mais deve ter
+          reparado?
+        </li>
+        <li>10. Se seu dia fosse um título de vídeo, qual seria?</li>
+      </div>
+
+      <h2>Perguntas Variáveis</h2>
+
+      <div id="dynamic-sections"></div>
+
+      <div class="controls">
+        <button onclick="exportData()">Exportar progresso (JSON)</button>
+        <button class="btn-clear" onclick="clearAll()">Limpar semana</button>
+      </div>
+    </div>
+
+    <script>
+      const content = [
+        {
+          category: '🎲 Hipóteses bobas / imaginativas',
+          questions: [
+            'Se nossa casa tivesse um cheiro oficial, qual seria?',
+            'Qual comida você defenderia como se fosse seu time?',
+            'Se tivéssemos um café só nosso, qual seria o nome?',
+            'Qual habilidade inútil você gostaria de dominar?',
+            'Qual personagem fictício você acha superestimado?',
+            'Se pudesse ser um animal só hoje, qual seria?',
+            'Qual superpoder aleatório você usaria hoje?',
+          ],
+        },
+        {
+          category: '🌍 Observações do mundo / cotidiano',
+          questions: [
+            'Qual coisa simples do mundo você acha genial?',
+            'O que você achava normal e depois descobriu que não era?',
+            'Algo curioso que você viu na rua hoje?',
+            'Qual lugar comum da cidade você tem carinho inexplicável?',
+            'Algo que te chamou atenção e ninguém mais parece notar?',
+            'Qual foi a cena mais estranha que você presenciou?',
+          ],
+        },
+        {
+          category: '🍽️ Sobre comida / sentidos',
+          questions: [
+            'Essa comida te lembra alguma memória de infância?',
+            'Se pudesse mudar algo nesse prato, o que seria?',
+            'Qual sabor descreve seu humor agora?',
+            'Qual textura você gosta mais e menos hoje?',
+            'Qual comida você acha injustamente subestimada?',
+          ],
+        },
+        {
+          category: '💭 Mini futuro / “nós”',
+          questions: [
+            'Qual passeio zero esforço deveríamos fazer juntos?',
+            'Se tivéssemos um dia livre amanhã, o que faríamos?',
+            'Uma coisa simples que você quer repetir comigo algum dia?',
+            'Se criássemos uma tradição só nossa, qual seria?',
+            'Se pudéssemos viajar agora sem limite, pra onde iríamos?',
+            'Qual pequena conquista juntos você quer manter como rotina?',
+          ],
+        },
+        {
+          category: '😂 Caos controlado / leveza',
+          questions: [
+            'Qual opinião sua mais impopular você já teve?',
+            'Que moda você viveu e hoje acha absurda?',
+            'Qual meme você acha subestimado?',
+            'Qual bruteira besta te faz rir todo dia?',
+            'Qual coisa ridícula você faria se ninguém julgasse?',
+            'Qual personagem de desenho animado te representa mais hoje?',
+          ],
+        },
+        {
+          category: '🎨 Criatividade / imaginação',
+          questions: [
+            'Se nosso dia fosse uma pintura, como seria?',
+            'Que objeto da casa seria protagonista de um filme?',
+            'Qual frase aleatória te descreve agora?',
+            'Se você pudesse criar uma cor nova, como seria?',
+            'Se nossa semana tivesse tema, qual seria?',
+          ],
+        },
+        {
+          category: '🔮 Pequenas reflexões / percepção',
+          questions: [
+            'Algo que você percebeu em você hoje que não tinha visto antes?',
+            'Algo que você percebeu em mim hoje que te fez sorrir?',
+            'Qual sensação de hoje você quer guardar?',
+            'Qual gesto simples do outro hoje te marcou?',
+            'Algo que você aprendeu hoje sem perceber que estava aprendendo?',
+          ],
+        },
+        {
+          category: '🛠️ Mini-ajustes / curiosidades',
+          questions: [
+            'Qual micro-hábito seu que você gostaria de mudar só por diversão?',
+            'Algo que poderia melhorar só um pouquinho no dia de hoje?',
+          ],
+        },
+      ];
+
+      const fixedRowsContainer = document.getElementById('fixed-rows');
+      const dynamicSections = document.getElementById('dynamic-sections');
+
+      // Gerar tabela fixa
+      for (let i = 1; i <= 7; i++) {
+        const tr = document.createElement('tr');
+        for (let j = 1; j <= 4; j++) {
+          const td = document.createElement('td');
+          const id = `fixed-${i}-${j}`;
+          td.innerHTML = `<div class="dot" id="${id}" onclick="toggleDot('${id}')"></div>`;
+          tr.appendChild(td);
+        }
+        fixedRowsContainer.appendChild(tr);
+      }
+
+      // Gerar perguntas variáveis
+      content.forEach((section, sIndex) => {
+        const h3 = document.createElement('h3');
+        h3.className = 'section-title';
+        h3.textContent = section.category;
+        dynamicSections.appendChild(h3);
+
+        section.questions.forEach((q, qIndex) => {
+          const id = `q-${sIndex}-${qIndex}`;
+          const div = document.createElement('div');
+          div.className = 'question-item';
+          div.onclick = () => toggleDot(id);
+          div.innerHTML = `<div class="dot" id="${id}"></div><span>${q}</span>`;
+          dynamicSections.appendChild(div);
+        });
+      });
+
+      function toggleDot(id) {
+        document.getElementById(id).classList.toggle('active');
+        saveState();
+      }
+
+      function saveState() {
+        const state = {};
+        document
+          .querySelectorAll('.dot')
+          .forEach((dot) => (state[dot.id] = dot.classList.contains('active')));
+        localStorage.setItem('perguntas_v1', JSON.stringify(state));
+      }
+
+      function loadState() {
+        const saved = localStorage.getItem('perguntas_v1');
+        if (saved) {
+          const state = JSON.parse(saved);
+          Object.keys(state).forEach((id) => {
+            const el = document.getElementById(id);
+            if (el && state[id]) el.classList.add('active');
+          });
+        }
+      }
+
+      function clearAll() {
+        if (confirm('Deseja desmarcar tudo?')) {
+          localStorage.removeItem('perguntas_v1');
+          document
+            .querySelectorAll('.dot')
+            .forEach((dot) => dot.classList.remove('active'));
+        }
+      }
+
+      function exportData() {
+        const saved = localStorage.getItem('perguntas_v1') || '{}';
+        const blob = new Blob([saved], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `progresso_${new Date().toLocaleDateString()}.json`;
+        a.click();
+      }
+
+      window.onload = loadState;
+    </script>
+  </body>
+</html>
