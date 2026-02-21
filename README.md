@@ -34,4 +34,4 @@ Como estudante de **Ciência de Dados** e entusiasta da escrita, acredito que as
 3. Não requer backend ou instalação de dependências (estático e leve).
 
 ---
-*Desenvolvido com cuidado por Vi.*
+*Desenvolvido com cuidado.*
